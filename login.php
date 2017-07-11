@@ -3,8 +3,7 @@
 
 if (isset($_POST['submitLogin'])) {
 	$user = new User();
-	$user->login($_POST['email'], $_POST['password']);
-	var_dump($user); die;
+	$res = $user->login($_POST['email'], $_POST['password']);
 }
 
 ?>
@@ -87,13 +86,13 @@ if (isset($_POST['submitLogin'])) {
         <h2 class="form-signin-heading">Please sign in</h2>
         <label for="inputEmail" class="sr-only">Email address</label>
         <input type="email" id="inputEmail" class="form-control" placeholder="Email address" name="email" required autofocus>
-		<span class="text-danger"><?php echo $emailError; ?></span>
+		<span class="text-danger"><?php echo @$emailError; ?></span>
         <label for="inputPassword" class="sr-only">Password</label>
         <input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required>
-		<span class="text-danger"><?php echo $passError; ?></span>
+		<span class="text-danger"><?php echo @$passError; ?></span>
         <button class="btn btn-lg btn-primary btn-block" type="submit" name="submitLogin">Sign in</button>
-		<? if ( isset($errMSG) ) {
-			echo $errMSG;
+		<? if ( isset($res) ) {
+			echo $res;
 		}
 		?>
       </form>
