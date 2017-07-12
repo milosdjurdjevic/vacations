@@ -11,6 +11,7 @@ class User
         $this->config = parse_ini_file('config/app.ini');
         $this->db = new MysqliDb($this->config['host'], $this->config['user'], $this->config['password'], $this->config['db_name']);
     }
+    
     public function login ($e_mail, $password)
     {
         session_start();
@@ -102,6 +103,7 @@ class User
         $this->db->where('id', $data['employeeId']);
 
         if ($this->db->update('users', $employeeData)) {
+            $_SESSION['flashMessage'] = "Employee updated";
             header("Location: employees.php");
         } else {
             return false;
@@ -110,7 +112,6 @@ class User
 
     public function changeEmployeePassword ($data)
     {
-        var_dump($_SERVER['QUERY_STRING']); die;
         $newPass = $_POST['newPassword'];
         $passConfirm = $_POST['passConfirm'];
 
@@ -123,6 +124,9 @@ class User
             $this->db->update('users', [
                 'password' => password_hash($newPass, PASSWORD_DEFAULT)
             ]);
+
+            $_SESSION['flashMessage'] = "Password changed";
+            header("Location: employees.php");
         }
         
     }
@@ -135,6 +139,7 @@ class User
             $this->db->where('userId', $id);
             $this->db->delete('user_roles');
 
+            $_SESSION['flashMessage'] = "Successfully deleted";
             header("Location: employees.php");
         } else {
             return false;

@@ -15,9 +15,11 @@
                     <li class=""><a href="#">Home</a></li>
                     <li><a href="employees.php">Manage employees</a></li>
                     <li><a href="#contact">Vacation requests</a></li>
+                    <li><a href="logout.php">Logout</a></li>
                 <? else: ?>
                     <li class=""><a href="#">Home</a></li>
-                    <li><a href="#about">Request a vacation</a></li>
+                    <li><a href="request_vacation.php">Request a vacation</a></li>
+                    <li><a href="logout.php">Logout</a></li>
                 <? endif; ?>
             </ul>
         </div><!--/.nav-collapse -->

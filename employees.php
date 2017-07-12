@@ -16,6 +16,16 @@ $employees = $user->getEmployees();
     <div class="container">
     <br>
     <br>
+    <?
+        if (isset($_SESSION['flashMessage'])) {
+    ?>
+        <div class="alert alert-success">
+            <strong>Success!</strong> <?= $_SESSION['flashMessage'] ?>.
+        </div>
+    <?
+            unset($_SESSION['flashMessage']);
+        }
+    ?>
         <!-- Example row of columns -->
         <div class="row">
             <a href="add_employee.php" class="btn btn-default">Add Employee</a>

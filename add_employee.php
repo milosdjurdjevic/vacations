@@ -41,6 +41,7 @@ if (isset($_POST['formSubmited'])) {
                     <label for="password">Password:</label>
                     <input type="password" class="form-control" id="password" placeholder="Password" name="password">
                     <span id="passwordError"></span>
+                    <span id="passwordMismatch"></span>
                 </div>
                 <div class="form-group">
                     <label for="passConfirm">Confirm Password:</label>
@@ -72,26 +73,38 @@ if (isset($_POST['formSubmited'])) {
             if (firstname == '') {
                 $('#firstNameError').text('First name is required');
                 errors++;
+            } else {
+                $('#firstNameError').text('');
             }
             if (lastName == '') {
                 $('#lastNameError').text('Last name is required');
                 errors++;
+            } else {
+                $('#lastNameError').text('');
             }
             if (email == '') {
                 $('#emailError').text('Email is required');
                 errors++;
+            } else {
+                $('#emailError').text('');
             }
             if (password == '') {
                 $('#passwordError').text('Password is required');
                 errors++;
+            } else {
+                $('#passwordError').text('');
             }
             if (passConfirm == '') {
                 $('#passConfirmError').text('Password confirmation is required');
                 errors++;
+            } else {
+                $('#passConfirmError').text('');
             }
             if (password != passConfirm) {
-                $('#passwordError').text('Passwords do not match');
+                $('#passwordMismatch').text('Passwords do not match');
                 errors++;
+            } else {
+                $('#passwordMismatch').text('');
             }
 
             if (errors == 0) {
