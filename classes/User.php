@@ -66,14 +66,6 @@ class User
 
     public function logout ()
     {
-//        $data = [
-//            'firstName' => 'Marko',
-//            'lastName' => 'Djurdjevic',
-//            'email' => 'djudja@gmail.com',
-//            'password' => password_hash('marko123', PASSWORD_DEFAULT)
-//        ];
-//        $this->db->insert('users', $data);
-
         unset($_SESSION['user']);
         session_unset();
         session_destroy();
@@ -88,5 +80,83 @@ class User
 
         if ($res)
             return $res;
+    }
+
+    public function getEmployee ($id)
+    {
+        $this->db->where('id', $id);
+        $res = $this->db->get('users u');
+
+        if ($res)
+            return $res;
+    }
+
+    public function editEmployee ($data)
+    {
+        $employeeData = [
+            'firstName' => $data['firstName'],
+            'lastName' => $data['lastName'],
+            'email' => $data['email'],
+        ];
+        
+        $this->db->where('id', $data['employeeId']);
+
+        if ($this->db->update('users', $employeeData)) {
+            header("Location: employees.php");
+        } else {
+            return false;
+        }
+    }
+
+    public function changeEmployeePassword ($data)
+    {
+        var_dump($_SERVER['QUERY_STRING']); die;
+        $newPass = $_POST['newPassword'];
+        $passConfirm = $_POST['passConfirm'];
+
+        if (empty($newPass) || empty($passConfirm)) {
+            return 'Must fill both fileds!!!';
+        }
+
+        if ($newPass == $passConfirm) {
+            $this->db->where('id', $data['employeeId']);
+            $this->db->update('users', [
+                'password' => password_hash($newPass, PASSWORD_DEFAULT)
+            ]);
+        }
+        
+    }
+
+    public function deleteEmployee ($id)
+    {
+        $this->db->where('id', $id);
+        
+        if ($this->db->delete('users')) {
+            $this->db->where('userId', $id);
+            $this->db->delete('user_roles');
+
+            header("Location: employees.php");
+        } else {
+            return false;
+        }
+    }
+
+    public function createEmployee ($data)
+    {
+        $employeeData = [
+            'firstName' => $data['firstName'],
+            'lastName' => $data['lastName'],
+            'email' => $data['email'],
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT)
+        ];
+
+        if ($id = $this->db->insert('users', $employeeData)) {
+            $this->db->insert('user_roles', [
+                'userId' => $id,
+                'roleId' => 2
+            ]);
+
+            header("Location: employees.php");
+        }
     }
 }

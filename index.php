@@ -1,5 +1,5 @@
 <?
-    include 'pages/includes/header.php';
+    include 'includes/header.php';
 
     if(!isset($_SESSION['user'])) {
         header("Location: login.php");
@@ -8,4 +8,4 @@
 ?>
 
 <?
-    include 'pages/includes/footer.php';
+    include 'includes/footer.php';
