@@ -14,7 +14,6 @@ class Vacation
 
     public function vacation($startDate, $endDate)
     {
-        session_start();
         $data = [
             'userId' => $_SESSION['user']['id'],
             'startDate' => date('Y-m-d', strtotime($startDate)),
@@ -24,9 +23,12 @@ class Vacation
         ];
 
         if ($this->validateRequestedVacation($startDate, $endDate)) {
-            $this->db->insert('vacations', $data);
+            if ($this->db->insert('vacations', $data)) {
+                $_SESSION['flashMessage'] = 'Requested vacation sent to review';
+                header("Location: overview.php");
+            }
         } else {
-            $_SESSION['flashMessage'] = "Requested dates overlap with existing";
+            $_SESSION['flashMessage'] = 'Requested dates overlap with existing or date is invalid.';
             header("Location: request_vacation.php");
         }
     }
@@ -37,16 +39,21 @@ class Vacation
         $this->db->where('isActive', 1);
         $res = $this->db->get('vacations');
 
-        foreach ($res as $vacation) {
-            if( strtotime($vacation['startDate']) <= strtotime($endDate) && strtotime($vacation['startDate']) >= strtotime($startDate)
-                || strtotime($vacation['endDate']) <= strtotime($endDate) && strtotime($vacation['endDate']) >= strtotime($startDate)
-                || in_array(strtotime($startDate), range(strtotime($vacation['startDate']), strtotime($vacation['endDate']))) // If requested start date is in range of existing date
-                || in_array(strtotime($endDate), range(strtotime($vacation['startDate']), strtotime($vacation['endDate']))) // If requested end date is in range of existing date
-            ) { //If the dates overlap
-                return false;
-            }
+        if ($res) {
+            foreach ($res as $vacation) {
+                if( strtotime($vacation['startDate']) <= strtotime($endDate) && strtotime($vacation['startDate']) >= strtotime($startDate)
+                    || strtotime($vacation['endDate']) <= strtotime($endDate) && strtotime($vacation['endDate']) >= strtotime($startDate)
+                    || in_array(strtotime($startDate), range(strtotime($vacation['startDate']), strtotime($vacation['endDate']))) // If requested start date is in range of existing date
+                    || in_array(strtotime($endDate), range(strtotime($vacation['startDate']), strtotime($vacation['endDate']))) // If requested end date is in range of existing date
+                ) { //If the dates overlap
+                    return false;
+                }
 
-            return true; //Return true if there is no overlap
+                return true; //Return true if there is no overlap
+            }
+        } else {
+            return true;
         }
+
     }
 }

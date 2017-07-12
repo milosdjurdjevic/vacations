@@ -2,10 +2,11 @@
 include 'includes/header.php';
 
 if (!isset($_SESSION['user'])) {
-    if ($_SESSION['user']['roleId'] != 1) {
-        header("Location: login.php");
-        exit;
-    }
+    header("Location: login.php");
+    exit;
+} else if ($_SESSION['user']['roleId'] != 1) {
+    header("Location: login.php");
+    exit;
 }
 
 require('classes/User.php');
@@ -120,28 +121,28 @@ if (isset($_POST['edituserInfo'])) {
         $('#editEmployeeBtn').click(function (e) {
             e.preventDefault();
 
-            var firstName = $('#firstName').val(),
+            var firstname = $('#firstName').val(),
                 lastName = $('#lastName').val(),
                 email = $('#email').val(),
                 errors = 0;
 
-            if (password == '') {
-                $('#passwordError').text('Password is required');
+            if (firstname == '') {
+                $('#firstNameError').text('First name is required');
                 errors++;
             } else {
-                $('#passwordError').text('');
+                $('#firstNameError').text('');
             }
-            if (passConfirm == '') {
-                $('#passConfirmError').text('Password confirmation is required');
+            if (lastName == '') {
+                $('#lastNameError').text('Last name is required');
                 errors++;
             } else {
-                $('#passConfirmError').text('');
+                $('#lastNameError').text('');
             }
-            if (password != passConfirm) {
-                $('#passwordMismatch').text('Passwords do not match');
+            if (email == '') {
+                $('#emailError').text('Email is required');
                 errors++;
             } else {
-                $('#passwordMismatch').text('');
+                $('#emailError').text('');
             }
             console.log(errors);
             if (errors == 0) {
