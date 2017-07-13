@@ -12,12 +12,11 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <? if ($_SESSION['user']['roleId'] == 1): ?>
-                    <li class=""><a href="#">Home</a></li>
                     <li><a href="employees.php">Manage employees</a></li>
-                    <li><a href="#contact">Vacation requests</a></li>
+                    <li><a href="vacation_requests.php">Vacation requests</a></li>
                     <li><a href="logout.php">Logout</a></li>
                 <? else: ?>
-                    <li class=""><a href="#">Home</a></li>
+                    <li class=""><a href="overview.php">Home</a></li>
                     <li><a href="request_vacation.php">Request a vacation</a></li>
                     <li><a href="logout.php">Logout</a></li>
                 <? endif; ?>

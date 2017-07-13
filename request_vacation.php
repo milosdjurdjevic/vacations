@@ -16,19 +16,25 @@ $vacation = new Vacation();
 if (isset($_POST['requestVacation'])) {
     $res = $vacation->vacation($_POST['startDate'], $_POST['endDate']);
 }
-var_dump($_SESSION['flashMessage']);
 ?>
 <div class="container">
     <br>
     <br>
     <?
-        if (isset($_SESSION['flashMessage'])) {
+        if (isset($_SESSION['flashSuccess'])) {
     ?>
-        <div class="alert alert-danger">
-            <strong>Error!</strong> <?= $_SESSION['flashMessage'] ?>.
+        <div class="alert alert-success">
+            <strong>Success!</strong> <?= $_SESSION['flashSuccess'] ?>.
         </div>
     <?
-//        unset($_SESSION['flashMessage']);
+        unset($_SESSION['flashSuccess']);
+        } else if (isset($_SESSION['flashError'])) {
+    ?>
+        <div class="alert alert-danger">
+            <strong>Error!</strong> <?= $_SESSION['flashError'] ?>.
+        </div>
+    <?
+        unset($_SESSION['flashError']);
         }
     ?>
     <div class="row">

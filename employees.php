@@ -18,13 +18,20 @@ $employees = $user->getEmployees();
     <br>
     <br>
     <?
-        if (isset($_SESSION['flashMessage'])) {
+        if (isset($_SESSION['flashSuccess'])) {
     ?>
         <div class="alert alert-success">
-            <strong>Success!</strong> <?= $_SESSION['flashMessage'] ?>.
+            <strong>Success!</strong> <?= $_SESSION['flashSuccess'] ?>.
         </div>
     <?
-            unset($_SESSION['flashMessage']);
+        unset($_SESSION['flashSuccess']);
+        } else if (isset($_SESSION['flashError'])) {
+    ?>
+        <div class="alert alert-danger">
+            <strong>Error!</strong> <?= $_SESSION['flashError'] ?>.
+        </div>
+    <?
+        unset($_SESSION['flashError']);
         }
     ?>
         <!-- Example row of columns -->
@@ -43,7 +50,6 @@ $employees = $user->getEmployees();
                     <th>Action</th>
                 </thead>
                 <tbody>
-                    
                     <?
                     if ($employees):
                         foreach ($employees as $employee): ?>

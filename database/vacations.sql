@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.6.5.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Jul 12, 2017 at 12:03 AM
--- Server version: 10.1.24-MariaDB
--- PHP Version: 7.1.6
+-- Host: 127.0.0.1
+-- Generation Time: Jul 13, 2017 at 05:55 PM
+-- Server version: 10.1.21-MariaDB
+-- PHP Version: 5.6.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -62,7 +60,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `firstName`, `lastName`, `email`, `password`, `daysLeft`) VALUES
 (1, 'Milos', 'Djurdjevic', 'milosdjurdjevicc@gmail.com', '$2y$10$O1wyLmtAaBaJuuJAXfEb8OSNrpTLw6Qa5KAzHckop04mMRLqA62rO', 20),
-(2, 'Marko', 'Djurdjevic', 'djudja@gmail.com', '$2y$10$7IRxTLk8Zwpll6yE8nPLcuNKnM54yWPr5EF6ID.fRIT.c9lpaJlSq', 20);
+(2, 'Marko', 'Djurdjevic', 'djudja@gmail.com', '$2y$10$pphUfoU7A1ICMqwxI5vCluncuPBzvZMt1a7PHeyJ4yQX9gba3I4my', 12);
 
 -- --------------------------------------------------------
 
@@ -99,6 +97,29 @@ INSERT INTO `user_roles` (`id`, `userId`, `roleId`) VALUES
 (1, 1, 1),
 (2, 2, 2);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `vacations`
+--
+
+CREATE TABLE `vacations` (
+  `id` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `startDate` date NOT NULL,
+  `endDate` date NOT NULL,
+  `status` enum('a','r','w') COLLATE utf8_unicode_ci NOT NULL,
+  `isActive` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=COMPACT;
+
+--
+-- Dumping data for table `vacations`
+--
+
+INSERT INTO `vacations` (`id`, `userId`, `startDate`, `endDate`, `status`, `isActive`) VALUES
+(5, 2, '2017-07-14', '2017-07-21', 'a', 0),
+(6, 2, '2017-08-18', '2017-08-21', 'r', 1);
+
 --
 -- Indexes for dumped tables
 --
@@ -129,6 +150,12 @@ ALTER TABLE `user_roles`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `vacations`
+--
+ALTER TABLE `vacations`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -151,8 +178,12 @@ ALTER TABLE `user_requests`
 -- AUTO_INCREMENT for table `user_roles`
 --
 ALTER TABLE `user_roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;COMMIT;
-
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `vacations`
+--
+ALTER TABLE `vacations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

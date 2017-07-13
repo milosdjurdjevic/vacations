@@ -50,10 +50,12 @@ class User
                         $_SESSION['user']['roleId'] = $userRole[0]['roleId'];
 
                         header("Location: index.php");
+                        exit;
                     } else if ($userRole[0]['roleId'] == 2) {
                         $_SESSION['user']['roleId'] = $userRole[0]['roleId'];
 
                         header("Location: overview.php");
+                        exit;
                     }
                 } else {
                     return 'Incorrect password';
@@ -71,6 +73,7 @@ class User
         session_unset();
         session_destroy();
         header("Location: login.php");
+        exit;
     }
 
     public function getEmployees ()
@@ -103,8 +106,9 @@ class User
         $this->db->where('id', $data['employeeId']);
 
         if ($this->db->update('users', $employeeData)) {
-            $_SESSION['flashMessage'] = "Employee updated";
+            $_SESSION['flashSuccess'] = "Employee updated";
             header("Location: employees.php");
+            exit;
         } else {
             return false;
         }
@@ -125,8 +129,9 @@ class User
                 'password' => password_hash($newPass, PASSWORD_DEFAULT)
             ]);
 
-            $_SESSION['flashMessage'] = "Password changed";
+            $_SESSION['flashSuccess'] = "Password changed";
             header("Location: employees.php");
+            exit;
         }
         
     }
@@ -139,7 +144,7 @@ class User
             $this->db->where('userId', $id);
             $this->db->delete('user_roles');
 
-            $_SESSION['flashMessage'] = "Successfully deleted";
+            $_SESSION['flashSuccess'] = "Successfully deleted";
             header("Location: employees.php");
         } else {
             return false;
@@ -162,6 +167,7 @@ class User
             ]);
 
             header("Location: employees.php");
+            exit;
         }
     }
 }
