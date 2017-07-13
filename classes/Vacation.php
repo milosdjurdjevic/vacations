@@ -6,12 +6,15 @@ class Vacation
     private $db;
     public $config;
 
-    public function __construct ()
+    public function __construct()
     {
         $this->config = parse_ini_file('config/app.ini');
         $this->db = new MysqliDb($this->config['host'], $this->config['user'], $this->config['password'], $this->config['db_name']);
     }
 
+    /**
+     * Save a requested vacation
+     */
     public function vacation($startDate, $endDate)
     {
         $data = [
@@ -30,21 +33,30 @@ class Vacation
             }
         } else {
             $_SESSION['flashError'] = 'Requested dates overlap with existing or date is invalid.';
-            header("Location: overview.php");
+            header("Location: request_vacation.php");
             exit;
         }
     }
 
+    /**
+     * Check if requested date is valid or do not overlap with existing or if employee has enough days for requested vacation
+     */
     private function validateRequestedVacation($startDate, $endDate)
     {
-        $this->db->where('userId', $_SESSION['user']['id']);
-        $this->db->where('status', 'a');
-        $this->db->orWhere('status', 'w');
-        $res = $this->db->get('vacations');
+        $res = $this->db->where('userId', $_SESSION['user']['id'])
+            ->where('status', 'a')
+            ->orWhere('status', 'w')
+            ->get('vacations');
+
+//        $onReview = $this->db->where('userId', $_SESSION['user']['id'])
+//            ->where('status', 'w')
+//            ->get('vacations');
+//
+//        $res = array_merge($approved, $onReview);
 
         $vacationDuration = $this->calculateVacationDays($startDate, $endDate);
         $daysLeft = $this->db->where('id', $_SESSION['user']['id'])->get('users', null, 'daysLeft');
-        
+
         if ($vacationDuration > $daysLeft[0]['daysLeft']) {
             $_SESSION['flashError'] = 'You have requested more days than you have left.';
             header("Location: request_vacation.php");
@@ -53,7 +65,8 @@ class Vacation
 
         if ($res) {
             foreach ($res as $vacation) {
-                if( strtotime($vacation['startDate']) <= strtotime($endDate) && strtotime($vacation['startDate']) >= strtotime($startDate)
+                // Check if days overlap
+                if (strtotime($vacation['startDate']) <= strtotime($endDate) && strtotime($vacation['startDate']) >= strtotime($startDate)
                     || strtotime($vacation['endDate']) <= strtotime($endDate) && strtotime($vacation['endDate']) >= strtotime($startDate)
                     || in_array(strtotime($startDate), range(strtotime($vacation['startDate']), strtotime($vacation['endDate']))) // If requested start date is in range of existing date
                     || in_array(strtotime($endDate), range(strtotime($vacation['startDate']), strtotime($vacation['endDate']))) // If requested end date is in range of existing date
@@ -68,102 +81,137 @@ class Vacation
         }
     }
 
-    public function getVacationsOnReview ()
+    /**
+     * Get vacations for user that is on review
+     */
+    public function getVacationsOnReview()
     {
-        $this->db->where('userId', $_SESSION['user']['id']);
-        $this->db->where('status', 'w');
-        $this->db->where('isActive', 1);
-        $res = $this->db->get('vacations');
+        $res = $this->db->where('userId', $_SESSION['user']['id'])
+            ->where('status', 'w')
+            ->where('isActive', 1)
+            ->get('vacations');
 
         if ($res)
             return $res;
     }
 
-    public function getApprovedVacations ()
+    /**
+     * Get vacations for user that are approved
+     */
+    public function getApprovedVacations()
     {
-        $this->db->where('userId', $_SESSION['user']['id']);
-        $this->db->where('status', 'a');
-        // $this->db->where('isActive', 1);
-        $res = $this->db->get('vacations');
+        $res = $this->db->where('userId', $_SESSION['user']['id'])
+            ->where('status', 'a')
+            ->get('vacations');
 
         if ($res)
             return $res;
     }
 
-    public function getRejectedVacations ()
+    /**
+     * Get vacations for user that are rejected
+     */
+    public function getRejectedVacations()
     {
-        $this->db->where('userId', $_SESSION['user']['id']);
-        $this->db->where('status', 'r');
-        // $this->db->where('isActive', 1);
-        $res = $this->db->get('vacations');
+        $res = $this->db->where('userId', $_SESSION['user']['id'])
+            ->where('status', 'r')
+            ->get('vacations');
 
         if ($res)
             return $res;
     }
 
-    public function getAllRequests () {
+    /**
+     * Get all requested vacations for all users
+     */
+    public function getAllRequests()
+    {
         $cols = ['v.id', 'u.firstName', 'u.lastName', 'v.startDate', 'v.endDate'];
-        $this->db->join('users u', 'v.userId=u.id','INNER');
-        $this->db->where('status', 'w');
-        $res = $this->db->get('vacations v', null, $cols);
+        $res = $this->db->join('users u', 'v.userId=u.id', 'INNER')
+            ->where('status', 'w')
+            ->where('isActive', 1)
+            ->get('vacations v', null, $cols);
 
         if ($res)
             return $res;
     }
 
-    public function rejectVacation ($id)
+    /**
+     * Reject a vacation for user
+     */
+    public function rejectVacation($id)
     {
-        $this->db->where('id', $id);
-        $res = $this->db->update('vacations', [
-            'status' => 'r',
-        ]);
+        $res = $this->db->where('id', $id)
+            ->update('vacations', [
+                'status' => 'r',
+            ]);
 
         if ($res)
             return $res;
     }
 
-    public function approveVacation ($id)
+    /**
+     * Approve a vacation for user
+     */
+    public function approveVacation($id)
     {
-        $this->db->where('id', $id);
-        $res = $this->db->update('vacations', [
-            'status' => 'a',
-            'isActive' => 0
-        ]);
+        $res = $this->db->where('id', $id)
+            ->update('vacations', [
+                'status' => 'a',
+                'isActive' => 0
+            ]);
 
         if ($res) {
-            $this->db->where('id', $id);
-            $data = $this->db->get('vacations');
+            $data = $this->db->where('id', $id)
+                ->get('vacations');
 
-            $this->db->where('id', $data[0]['userId']);
-            $daysLeft = $this->db->get('users', null, ['daysLeft']);
+            $daysLeft = $this->db->where('id', $data[0]['userId'])
+                ->get('users', null, ['daysLeft']);
 
             $vacationDays = $this->calculateVacationDays($data[0]['startDate'], $data[0]['endDate']);
             $newDaysLeft = $daysLeft[0]['daysLeft'] - $vacationDays;
-            
-            $this->db->where('id', $data[0]['userId']);
-            $diff = $this->db->update('users', [
-                'daysLeft' => $newDaysLeft
-            ]);
-            
+
+            $diff = $this->db->where('id', $data[0]['userId'])
+                ->update('users', [
+                    'daysLeft' => $newDaysLeft
+                ]);
+
             if ($diff) {
                 return true;
             }
         }
     }
 
-    private function calculateVacationDays ($startDate, $endDate)
+    /**
+     * Get number of days for vacation
+     */
+    private function calculateVacationDays($startDate, $endDate)
     {
         $start = date_create($startDate);
         $end = date_create($endDate);
-        
+
         $diff = date_diff($start, $end);
-        
+
         return $diff->days + 1;
     }
 
+    /**
+     * History of vacation requests
+     */
     public function getRequestsHistory()
     {
         $res = $this->db->join('users u ', 'u.id=v.userId', 'INNER')->where('status', 'a')->orWhere('status', 'r')->get('vacations v');
+
+        if ($res)
+            return $res;
+    }
+
+    public function cancelRequest($id)
+    {
+        $res = $this->db->where('id', $id)
+            ->update('vacations', [
+                'isActive' => 0
+            ]);
 
         if ($res)
             return $res;

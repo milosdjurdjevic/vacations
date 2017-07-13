@@ -65,8 +65,12 @@ $employees = $user->getEmployees();
                                 </td>
                             </tr>
                     <?  endforeach; 
-                    endif;
+                    else:
                     ?>
+                    <tr>
+                        <td>No employees yet. Please add one to start</td>
+                    </tr>
+                <? endif; ?>
                 </tbody>
             </table>
         </div>

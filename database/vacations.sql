@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
+-- version 4.7.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jul 13, 2017 at 05:55 PM
--- Server version: 10.1.21-MariaDB
--- PHP Version: 5.6.30
+-- Host: localhost
+-- Generation Time: Jul 13, 2017 at 11:48 PM
+-- Server version: 10.1.24-MariaDB
+-- PHP Version: 7.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -59,23 +61,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `firstName`, `lastName`, `email`, `password`, `daysLeft`) VALUES
-(1, 'Milos', 'Djurdjevic', 'milosdjurdjevicc@gmail.com', '$2y$10$O1wyLmtAaBaJuuJAXfEb8OSNrpTLw6Qa5KAzHckop04mMRLqA62rO', 20),
-(2, 'Marko', 'Djurdjevic', 'djudja@gmail.com', '$2y$10$pphUfoU7A1ICMqwxI5vCluncuPBzvZMt1a7PHeyJ4yQX9gba3I4my', 12);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `user_requests`
---
-
-CREATE TABLE `user_requests` (
-  `id` int(11) NOT NULL,
-  `userId` int(11) NOT NULL,
-  `startDate` date NOT NULL,
-  `endDate` date NOT NULL,
-  `status` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `isActive` tinyint(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+(1, 'Admin', 'Admin', 'admin@admin.com', '$2y$10$zozHvCwYj5K0WYfaF5F1EOPAr.ILppQgteJ62PhmFEL6xuEW7VLU.', 20),
+(2, 'Test', 'User', 'test@email.com', '$2y$10$BrzLQeLyUNl55DbgU1ofzuB9eN9yPkrDq2qlj4NuP2UNNxzuS47MO', 0);
 
 -- --------------------------------------------------------
 
@@ -113,14 +100,6 @@ CREATE TABLE `vacations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `vacations`
---
-
-INSERT INTO `vacations` (`id`, `userId`, `startDate`, `endDate`, `status`, `isActive`) VALUES
-(5, 2, '2017-07-14', '2017-07-21', 'a', 0),
-(6, 2, '2017-08-18', '2017-08-21', 'r', 1);
-
---
 -- Indexes for dumped tables
 --
 
@@ -136,12 +115,6 @@ ALTER TABLE `roles`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
-
---
--- Indexes for table `user_requests`
---
-ALTER TABLE `user_requests`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `user_roles`
@@ -170,11 +143,6 @@ ALTER TABLE `roles`
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
--- AUTO_INCREMENT for table `user_requests`
---
-ALTER TABLE `user_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
 -- AUTO_INCREMENT for table `user_roles`
 --
 ALTER TABLE `user_roles`
@@ -183,7 +151,8 @@ ALTER TABLE `user_roles`
 -- AUTO_INCREMENT for table `vacations`
 --
 ALTER TABLE `vacations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

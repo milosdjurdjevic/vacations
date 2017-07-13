@@ -6,13 +6,16 @@ class User
     private $db;
     public $config;
 
-    public function __construct ()
+    public function __construct()
     {
         $this->config = parse_ini_file('config/app.ini');
         $this->db = new MysqliDb($this->config['host'], $this->config['user'], $this->config['password'], $this->config['db_name']);
     }
-    
-    public function login ($e_mail, $password)
+
+    /**
+     * Login user
+     */
+    public function login($e_mail, $password)
     {
         session_start();
         $error = false;
@@ -29,22 +32,22 @@ class User
         }
 
         // Check if pass is set
-        if(empty($pass)){
+        if (empty($pass)) {
             $error = true;
             return $passError = "Please enter your password.";
         }
 
         if (!$error) {
-            $this->db->where('email', $email);
-            $res = $this->db->get('users');
+            $res = $this->db->where('email', $email)
+                ->get('users');
 
             if ($res) {
                 $passCheck = password_verify($pass, $res[0]['password']);
                 if ($passCheck) {
                     $_SESSION['user'] = $res[0];
 
-                    $this->db->where('userId', $res[0]['id']);
-                    $userRole = $this->db->get('user_roles');
+                    $userRole = $this->db->where('userId', $res[0]['id'])
+                        ->get('user_roles');
 
                     if ($userRole[0]['roleId'] == 1) {
                         $_SESSION['user']['roleId'] = $userRole[0]['roleId'];
@@ -67,7 +70,10 @@ class User
         }
     }
 
-    public function logout ()
+    /**
+     * Logout user
+     */
+    public function logout()
     {
         unset($_SESSION['user']);
         session_unset();
@@ -76,33 +82,56 @@ class User
         exit;
     }
 
-    public function getEmployees ()
+    /**
+     * Get all employees
+     */
+    public function getEmployees()
     {
-        $this->db->join('user_roles ur', 'u.id=ur.userId','INNER');
-        $this->db->where('ur.roleId', 2);
-        $res = $this->db->get('users u');
+        $res = $this->db->join('user_roles ur', 'u.id=ur.userId', 'INNER')
+            ->where('ur.roleId', 2)
+            ->get('users u', null, [
+                'u.id',
+                'u.firstName',
+                'u.lastName',
+                'u.email',
+                'u.daysLeft',
+            ]);
 
         if ($res)
             return $res;
     }
 
-    public function getEmployee ($id)
+    /**
+     * Get employee
+     */
+    public function getEmployee($id)
     {
-        $this->db->where('id', $id);
-        $res = $this->db->get('users u');
+
+        $this->db->insert('users', [
+            'firstName' => 'Admin',
+            'lastName' => 'Admin',
+            'email' => 'admin@admin.com',
+            'password' => password_hash('admin123', PASSWORD_DEFAULT)
+        ]);
+
+        $res = $this->db->where('id', $id)
+            ->get('users u');
 
         if ($res)
             return $res;
     }
 
-    public function editEmployee ($data)
+    /**
+     * Edit employee
+     */
+    public function editEmployee($data)
     {
         $employeeData = [
             'firstName' => $data['firstName'],
             'lastName' => $data['lastName'],
             'email' => $data['email'],
         ];
-        
+
         $this->db->where('id', $data['employeeId']);
 
         if ($this->db->update('users', $employeeData)) {
@@ -114,7 +143,10 @@ class User
         }
     }
 
-    public function changeEmployeePassword ($data)
+    /**
+     * Change employee password
+     */
+    public function changeEmployeePassword($data)
     {
         $newPass = $_POST['newPassword'];
         $passConfirm = $_POST['passConfirm'];
@@ -124,34 +156,39 @@ class User
         }
 
         if ($newPass == $passConfirm) {
-            $this->db->where('id', $data['employeeId']);
-            $this->db->update('users', [
-                'password' => password_hash($newPass, PASSWORD_DEFAULT)
-            ]);
+            $this->db->where('id', $data['employeeId'])
+                ->update('users', [
+                    'password' => password_hash($newPass, PASSWORD_DEFAULT)
+                ]);
 
             $_SESSION['flashSuccess'] = "Password changed";
             header("Location: employees.php");
             exit;
         }
-        
+
     }
 
-    public function deleteEmployee ($id)
+    /**
+     * Delete employee
+     */
+    public function deleteEmployee($id)
     {
-        $this->db->where('id', $id);
-        
-        if ($this->db->delete('users')) {
-            $this->db->where('userId', $id);
-            $this->db->delete('user_roles');
+        if ($this->db->where('id', $id)->delete('users')) {
+            $this->db->where('userId', $id)
+                ->delete('user_roles');
 
             $_SESSION['flashSuccess'] = "Successfully deleted";
             header("Location: employees.php");
+            exit;
         } else {
             return false;
         }
     }
 
-    public function createEmployee ($data)
+    /**
+     * Create employee
+     */
+    public function createEmployee($data)
     {
         $employeeData = [
             'firstName' => $data['firstName'],
@@ -166,6 +203,11 @@ class User
                 'roleId' => 2
             ]);
 
+            $_SESSION['flashSuccess'] = 'Employee created successfully';
+            header("Location: employees.php");
+            exit;
+        } else {
+            $_SESSION['flashError'] = 'Employee not created successfully';
             header("Location: employees.php");
             exit;
         }

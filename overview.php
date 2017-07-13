@@ -53,6 +53,7 @@ $rejected = $vacation->getRejectedVacations();
             <thead>
                 <th>Start Date</th>
                 <th>End Date</th>
+                <th>Cacnel request</th>
             </thead>
             <tbody>
             <? 
@@ -61,6 +62,7 @@ $rejected = $vacation->getRejectedVacations();
                     <tr>
                         <td><?= $item['startDate'] ?></td>
                         <td><?= $item['endDate'] ?></td>
+                        <td><a href="cancel_vacation.php?id=<?= $item['id'] ?>">Cancel</a></td>
                     </tr>
             <? 
                     endforeach; 

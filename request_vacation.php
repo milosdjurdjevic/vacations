@@ -21,21 +21,21 @@ if (isset($_POST['requestVacation'])) {
     <br>
     <br>
     <?
-        if (isset($_SESSION['flashSuccess'])) {
-    ?>
+    if (isset($_SESSION['flashSuccess'])) {
+        ?>
         <div class="alert alert-success">
             <strong>Success!</strong> <?= $_SESSION['flashSuccess'] ?>.
         </div>
-    <?
+        <?
         unset($_SESSION['flashSuccess']);
-        } else if (isset($_SESSION['flashError'])) {
-    ?>
+    } else if (isset($_SESSION['flashError'])) {
+        ?>
         <div class="alert alert-danger">
             <strong>Error!</strong> <?= $_SESSION['flashError'] ?>.
         </div>
-    <?
+        <?
         unset($_SESSION['flashError']);
-        }
+    }
     ?>
     <div class="row">
         <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" id="editEmployeeForm">
@@ -60,7 +60,12 @@ include 'includes/footer.php';
 ?>
 <script>
     $(function () {
-        $("#startDate").datepicker();
-        $("#endDate").datepicker();
-    });
+        $("#startDate").datepicker({
+            minDate: new Date()
+        });
+        $("#endDate").datepicker({
+            minDate: new Date()
+        });
+    })
+    ;
 </script>

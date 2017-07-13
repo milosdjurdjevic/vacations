@@ -18,11 +18,13 @@ if (isset($_GET['action'])) {
         if ($vacation->approveVacation($_GET['id'])) {
             $_SESSION['flashSuccess'] = 'Vacation approved';
             header("Location: vacation_requests.php");
+            exit;
         }
     } else if ($_GET['action'] == 'reject') {
         if ($vacation->rejectVacation($_GET['id'])) {
             $_SESSION['flashSuccess'] = 'Vacation rejected';
             header("Location: vacation_requests.php");
+            exit;
         }
     }
 }
